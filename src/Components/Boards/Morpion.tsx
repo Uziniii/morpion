@@ -6,6 +6,8 @@ interface Props {
   topSentence: string;
   win: boolean | undefined | null;
   backToMenu: () => void;
+  oppStillOn: boolean;
+  rematch: () => void;
 }
 
 export default function Morpion({
@@ -15,7 +17,9 @@ export default function Morpion({
   onPlay,
   topSentence,
   win,
-  backToMenu
+  backToMenu,
+  oppStillOn,
+  rematch 
 }: Props) {
   return (
     <div className="morpion flex justify-center place-items-center h-full">

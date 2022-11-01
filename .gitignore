@@ -24,3 +24,8 @@ server/out
 *.njsproj
 *.sln
 *.sw?
+
+package-lock.json
+yarn.lock
+.pnp.*
+.yarn
