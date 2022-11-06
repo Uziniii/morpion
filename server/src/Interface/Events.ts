@@ -69,12 +69,12 @@ export interface EventClientData {
 
 export interface User {
   token: string;
-  id: {
-    adress: string;
-    port: number;
-  };
   c: connection;
   room: string | null;
+}
+
+export interface Users {
+  [key: string]: User;
 }
 
 export interface Game {
@@ -85,6 +85,10 @@ export interface Game {
   whoStart: number;
   count: number;
   board: Board;
+}
+
+export interface Games {
+  [key: string]: Game;
 }
 
 export interface EventFile {

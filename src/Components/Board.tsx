@@ -13,8 +13,6 @@ export interface BoardProps {
   setInRoom: (value: boolean) => void;
 }
 
-let token: string;
-
 export default function Board({
   game,
   invitePropsCode,

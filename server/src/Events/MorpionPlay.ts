@@ -33,15 +33,13 @@ export const event: EventFile = {
     let inviteWin = false
     let win = false
 
+    // Check the horizontal and vertical win
     for (let i = 0; i < game.board.length; i++) {
       let colJoin = ""
 
       for (let j = 0; j < game.board.length; j++) {
         colJoin += game.board[j][i]
       }
-
-      // console.log(game.board[i].join(""));
-      // console.log(colJoin);
 
       if (
         game.board[i].join("") === "xxx" ||
@@ -96,10 +94,6 @@ export const event: EventFile = {
           board: game.board
         }
       }))
-
-      delete games[user.room]
-      creator.room = null
-      invite.room = null
 
       return
     } else {

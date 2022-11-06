@@ -2,7 +2,7 @@ import http from "http"
 import express from "express"
 import { server as wsServer } from "websocket"
 import { readdirSync } from "fs"
-import { Events, EventFile, Game, EventClientData } from "./Interface/Events"
+import { Events, EventFile, Game, Games, Users, EventClientData } from "./Interface/Events"
 import { join } from "path"
 
 const app = express()
@@ -22,9 +22,9 @@ readdirSync("./server/out/Events/")
     events.set(eventType, event)
   })
 
-let users = {}
+let users: Users = {}
 let closeRef = {}
-let games: { [key: string]: Game } = {}
+let games: Games = {}
 
 app.use("/assets", express.static(join(__dirname, "../dist/assets")))
 
@@ -61,10 +61,6 @@ ws.on("connect", (c) => {
   ).toString(16)
 
   users[token] = {
-    id: {
-      adress: c.socket.remoteAddress,
-      port: c.socket.remotePort
-    },
     c: c,
     token,
     room: null
@@ -104,7 +100,21 @@ ws.on("close", (c) => {
 
   console.log(`Close connection : token : ${token}`);
 
-  if (users[token].room !== null) delete games[users[token].room]
+  if (users[token].room !== null) {
+    let room = games[users[token].room as string]
+
+    let toSend = JSON.stringify({
+      event: Events.LEAVE_ROOM,
+      data: {
+
+      }
+    })
+
+    users[room.creator].c.send(toSend)
+    users[room?.invite as string]?.c.send(toSend)
+
+    delete games[users[token].room as string]
+  }
 
   delete users[token]
   delete closeRef[ref]
