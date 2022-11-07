@@ -1,27 +1,27 @@
 import EventWSServer from "../WSServer";
 
-type eventFunc<UsersData> = ({
+type eventFunc<UsersData, Storage, EventData> = ({
     type,
     data,
     server,
     storage
 }: {
     type: string,
-    data,
-    server: EventWSServer<UsersData, Storage>
-    storage
+    data: EventData,
+    server: EventWSServer<UsersData, Storage>,
+    storage: Storage
 }) => any;
 
-class WSEvent<UsersData, Storage> {
+class WSEvent<UsersData, Storage, EventData> {
     public typeEvent: string;
-    protected event: eventFunc<UsersData>;
+    protected event: eventFunc<UsersData, Storage, EventData>;
 
     constructor({
         typeEvent,
         event
     }: {
         typeEvent: string;
-        event: eventFunc<UsersData>;
+        event: eventFunc<UsersData, Storage, EventData>;
     }) {
         this.typeEvent = typeEvent;
         this.event = event;

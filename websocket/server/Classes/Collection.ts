@@ -1,6 +1,6 @@
 type Json = { [key: string | number | symbol]: any }
 
-class Collection extends Map {
+class Collection<K, V> extends Map<K, V> {
     constructor (...map: any[]) {
         super()
 
@@ -14,14 +14,10 @@ class Collection extends Map {
             jsonToMap.push([ x, json[x] ])
         }
 
-        console.log(...jsonToMap);
-        console.log(new Map([ "a", "a" ]));
-        
-
-        return new Map(...jsonToMap)
+        return new Map(jsonToMap.entries())
     }
 
-    setJsonToMap (json: Json): this {
+    public setJsonToMap (json: Json): this {
         Collection.jsonToMap(json)
 
         return this
@@ -37,11 +33,9 @@ class Collection extends Map {
         return mapToObject
     }
 
-    toJson (): Json {
+    public toJson (): Json {
         return Collection.mapToJson(this)
     }
 }
 
-let collection = new Collection([ "a", 1 ]);
-
-console.log(collection.setJsonToMap({ "a": "1" }));
+export default Collection;

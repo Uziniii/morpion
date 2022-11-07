@@ -2,9 +2,10 @@ import { server, IServerConfig } from "websocket"
 import WSEvent from "./Classes/WSEvent";
 import User from "./Classes/User";
 import { Token } from "./Interface/User";
+import Collection from "./Classes/Collection";
 
 class EventWSServer<UsersData, Storage> {
-    constructor(config: IServerConfig | undefined, storage: { [key: string]: any }) {
+    constructor(config: IServerConfig | undefined, storage: { [key: string]: any }, defaultData = { }) {
         this.ws = new server(config);
 
         this.ws.on("connect", (c) => {
@@ -17,7 +18,7 @@ class EventWSServer<UsersData, Storage> {
                 )
             ).toString(16)
 
-            let user = new User<UsersData>(token, c)
+            let user = new User<UsersData>(token, c, defaultData)
 
             this.usersMap.set(token, user)
 
@@ -32,13 +33,7 @@ class EventWSServer<UsersData, Storage> {
 
                     if (event === undefined) return  
 
-                    let storageToObject = {}
-
-                    for (const [key, value] of this.storage) {
-                        storageToObject[key] = value
-                    }
-
-                    // event.fire(data, this, storageToObject)
+                    event.fire(data, this, this.storage.toJson as Storage)
                 } catch (error) {
                     console.log(error)
                 }
@@ -47,19 +42,13 @@ class EventWSServer<UsersData, Storage> {
             c.on("close", () => this.deleteUser(user.token))
         })
 
-        let storageToMap: ([string, any])[] = [];
-
-        for (const x in storage) {
-            storageToMap.push([ x, storage[x] ])
-        }
-        
-        this.storage = new Map(...storageToMap);
+        this.storage = new Collection<string, any>().setJsonToMap(storage);
     }
 
     private ws: server;
-    private usersMap = new Map<string, User<UsersData>>()
-    private events = new Map<string, WSEvent<UsersData, Storage>>()
-    private storage: Map<string, any>;
+    private usersMap = new Collection<string, User<UsersData>>()
+    private events = new Collection<string, WSEvent<UsersData, Storage, any>>()
+    private storage: Collection<string, any>;
     
     public getUser(id: Token): User<UsersData> | undefined {
         return this.usersMap.get(id);
@@ -82,11 +71,11 @@ class EventWSServer<UsersData, Storage> {
         return true;
     }
 
-    public getEvent(event: string): WSEvent<UsersData, Storage> | undefined {
+    public getEvent(event: string): WSEvent<UsersData, Storage, any> | undefined {
         return this.events.get(event);
     }
 
-    public setEvents(events: WSEvent<UsersData, Storage>[]) {
+    public setEvents(events: WSEvent<UsersData, Storage, any>[]) {
         events.forEach(event => this.events.set(event.typeEvent, event))
     }
 }

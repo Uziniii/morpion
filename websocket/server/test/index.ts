@@ -2,9 +2,10 @@ import WebSocketServer from "../WSServer";
 import http from "http"
 import express from "express"
 import WSEvent from "../Classes/WSEvent";
+import { EventClientData } from "../../../server/src/Interface/Events"
 
 interface UsersData {
-    room: string;
+    room: string | null;
 }
 
 const app = express()
@@ -20,6 +21,8 @@ class RoomManager {
     constructor() {
 
     }
+
+    public token = ""
 }
 
 interface Storage {
@@ -32,22 +35,23 @@ const wsServer = new WebSocketServer<UsersData, Storage>(
         autoAcceptConnections: true
     }, {
         roomManager: RoomManager
+    }, {
+        room: null
     }
 )
 
 wsServer.setEvents([
-    
-    new WSEvent<UsersData, Storage>({
+    new WSEvent<UsersData, Storage, EventClientData["CREATE_ROOM"]>({
         typeEvent: "CREATE_ROOM",
         event({ 
-            type, 
+            type,
             data,
-            server, 
+            server,
             storage: {
-                Room 
-            } 
+                roomManager: RoomManager
+            }
         }) {
             
-        },
+        }
     })
 ])
