@@ -1,25 +1,38 @@
-type eventFunc = ({
-    type
+import EventWSServer from "../WSServer";
+
+type eventFunc<UsersData> = ({
+    type,
+    data,
+    server,
+    storage
+}: {
+    type: string,
+    data,
+    server: EventWSServer<UsersData, Storage>
+    storage
 }) => any;
 
-class WSEvent {
+class WSEvent<UsersData, Storage> {
     public typeEvent: string;
-    protected event: eventFunc;
+    protected event: eventFunc<UsersData>;
 
     constructor({
         typeEvent,
         event
     }: {
         typeEvent: string;
-        event: eventFunc;
+        event: eventFunc<UsersData>;
     }) {
         this.typeEvent = typeEvent;
         this.event = event;
     }
 
-    public fire() {
+    public fire(data, wsServer, storage: Storage) {
         this.event({
-            type: this.typeEvent
+            type: this.typeEvent,
+            data,
+            server: wsServer,
+            storage
         });
     }
 }

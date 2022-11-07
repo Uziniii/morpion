@@ -2,15 +2,22 @@ import { connection } from "websocket";
 import { Token } from "../Interface/User";
 
 class User<UsersData> {
-    protected token: Token;
+    public token: Token;
     protected c: connection;
-    protected data: UsersData;
+    // public data: UsersData;
 
     constructor (token: Token, c: connection) {
         this.token = token;
         this.c = c;
     }
     
+    send (event, data) {
+        this.c.send(JSON.stringify({
+            event,
+            data
+        }))
+    }
+
     close () {
         this.c.close();
     }
