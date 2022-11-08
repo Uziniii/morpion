@@ -1,8 +1,15 @@
+import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
 import { EventFile, EventClientData, Game, Events } from "../Interface/Events";
 
-export const event: EventFile = {
+export new ServerEvent({
   eventType: Events.CREATE_ROOM,
-  event(c, data: EventClientData[Events.CREATE_ROOM], token, user, users, games) {
+  event({
+    data,
+    server,
+    storage,
+    type,
+    user
+  }) {
     user.room = (
       Date.now() +
       +(
@@ -40,4 +47,4 @@ export const event: EventFile = {
 
     games[user.room] = game
   }
-}
+})

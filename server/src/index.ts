@@ -4,10 +4,12 @@ import { server as wsServer } from "websocket"
 import { readdirSync } from "fs"
 import { Events, EventFile, Game, Games, Users, EventClientData } from "./Interface/Events"
 import { join } from "path"
+import EventWSServer from "../../websocket/server/WSServer"
+import UserData from "./Interface/UserData"
 
 const app = express()
 const server = http.createServer(app)
-const ws = new wsServer({
+const ws = new EventWSServer<UserData, >({
   httpServer: server,
   autoAcceptConnections: true
 })

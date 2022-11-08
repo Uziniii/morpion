@@ -1,8 +1,9 @@
 import WebSocketServer from "../WSServer";
 import http from "http"
 import express from "express"
-import WSEvent from "../Classes/WSEvent";
+import ServerEvent from "../Classes/ServerEvent";
 import { EventClientData } from "../../../server/src/Interface/Events"
+import { w3cwebsocket } from "websocket"
 
 interface UsersData {
     room: string | null;
@@ -22,11 +23,11 @@ class RoomManager {
 
     }
 
-    public token = ""
+    public token = "aa"
 }
 
 interface Storage {
-    roomManager: RoomManager
+    RoomManager: RoomManager
 }
 
 const wsServer = new WebSocketServer<UsersData, Storage>(
@@ -34,24 +35,45 @@ const wsServer = new WebSocketServer<UsersData, Storage>(
         httpServer: server,
         autoAcceptConnections: true
     }, {
-        roomManager: RoomManager
+        RoomManager: new RoomManager()
     }, {
         room: null
     }
 )
 
 wsServer.setEvents([
-    new WSEvent<UsersData, Storage, EventClientData["CREATE_ROOM"]>({
+    new ServerEvent<UsersData, Storage, EventClientData["CREATE_ROOM"]>({
         typeEvent: "CREATE_ROOM",
-        event({ 
+        event({
             type,
             data,
             server,
+            user,
             storage: {
-                roomManager: RoomManager
+                RoomManager
             }
         }) {
+            console.log(type);
             
+            console.log(user.data);
         }
     })
 ])
+
+server.listen(3000)
+
+const client = new w3cwebsocket("ws://localhost:3000")
+
+client.onopen = () => {
+    client.onmessage = (msg) => {
+        if (typeof msg.data !== "string") return;
+
+        let token = JSON.parse(msg.data).data.token;
+
+        client.send(JSON.stringify({
+            event: "CREATE_ROOM",
+            token,
+            data: { } 
+        }))
+    }
+}

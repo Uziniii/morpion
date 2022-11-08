@@ -8,17 +8,21 @@ class Collection<K, V> extends Map<K, V> {
     }
 
     static jsonToMap (json: Json): Map<any, any> {
-        let jsonToMap: any[][] = []
+        let jsonToMap = new Map()
         
         for (const x in json) {
-            jsonToMap.push([ x, json[x] ])
+            jsonToMap.set(x, json[x])
         }
-
-        return new Map(jsonToMap.entries())
+        
+        return jsonToMap
     }
 
     public setJsonToMap (json: Json): this {
-        Collection.jsonToMap(json)
+        let map = Collection.jsonToMap(json)
+
+        for (const x of map) {
+            this.set(...x)
+        }
 
         return this
     }

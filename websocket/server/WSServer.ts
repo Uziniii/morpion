@@ -1,5 +1,5 @@
 import { server, IServerConfig } from "websocket"
-import WSEvent from "./Classes/WSEvent";
+import ServerEvent from "./Classes/ServerEvent";
 import User from "./Classes/User";
 import { Token } from "./Interface/User";
 import Collection from "./Classes/Collection";
@@ -22,6 +22,10 @@ class EventWSServer<UsersData, Storage> {
 
             this.usersMap.set(token, user)
 
+            user.send("CREATE_TOKEN", {
+                token
+            })
+
             c.on("message", (msg) => {
                 if (msg.type !== "utf8") return
 
@@ -31,9 +35,9 @@ class EventWSServer<UsersData, Storage> {
                     let user = this.getUser(token);
                     let event = this.getEvent(eventName);
 
-                    if (event === undefined) return  
+                    if (event === undefined || user === undefined) return
 
-                    event.fire(data, this, this.storage.toJson as Storage)
+                    event.fire(data, this, this.storage.toJson() as Storage, user)
                 } catch (error) {
                     console.log(error)
                 }
@@ -47,7 +51,7 @@ class EventWSServer<UsersData, Storage> {
 
     private ws: server;
     private usersMap = new Collection<string, User<UsersData>>()
-    private events = new Collection<string, WSEvent<UsersData, Storage, any>>()
+    private events = new Collection<string, ServerEvent<UsersData, Storage, any>>()
     private storage: Collection<string, any>;
     
     public getUser(id: Token): User<UsersData> | undefined {
@@ -71,11 +75,11 @@ class EventWSServer<UsersData, Storage> {
         return true;
     }
 
-    public getEvent(event: string): WSEvent<UsersData, Storage, any> | undefined {
+    public getEvent(event: string): ServerEvent<UsersData, Storage, any> | undefined {
         return this.events.get(event);
     }
 
-    public setEvents(events: WSEvent<UsersData, Storage, any>[]) {
+    public setEvents(events: ServerEvent<UsersData, Storage, any>[]) {
         events.forEach(event => this.events.set(event.typeEvent, event))
     }
 }

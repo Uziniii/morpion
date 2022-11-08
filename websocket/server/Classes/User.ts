@@ -1,7 +1,7 @@
 import { connection } from "websocket";
-import { Token } from "../Interface/User";
+import { Token, User as IUser } from "../Interface/User";
 
-class User<UsersData> {
+class User<UsersData> implements IUser {
     public token: Token;
     protected c: connection;
     public data: UsersData;
@@ -12,7 +12,7 @@ class User<UsersData> {
         this.data = data
     }
     
-    send (event, data) {
+    send (event: string, data: any) {
         this.c.send(JSON.stringify({
             event,
             data
