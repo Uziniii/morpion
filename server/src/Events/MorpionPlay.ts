@@ -1,8 +1,8 @@
-import { Board, EventClientData, EventFile, Events } from "../Interface/Events";
+import { Board, EventsClientData, EventFile, Events } from "../Interface/Events";
 
 export const event: EventFile = {
   eventType: Events.MORPION_PLAY,
-  event(c, data: EventClientData[Events.MORPION_PLAY], token, user, users, games) {
+  event(c, data: EventsClientData[Events.MORPION_PLAY], token, user, users, games) {
     if (user.room === null) return
 
     let game = games[user.room]

@@ -1,8 +1,8 @@
-import { EventFile, EventClientData, Events } from "../Interface/Events";
+import { EventFile, EventsClientData, Events } from "../Interface/Events";
 
 export const event: EventFile = {
   eventType: Events.JOIN_ROOM,
-  event(c, data: EventClientData[Events.JOIN_ROOM], token, user, users, games) {
+  event(c, data: EventsClientData[Events.JOIN_ROOM], token, user, users, games) {
     let game = games[data?.inviteCode]
 
     if (game === undefined) c.send(JSON.stringify({

@@ -1,11 +1,34 @@
 import { server, IServerConfig } from "websocket"
 import ServerEvent from "./Classes/ServerEvent";
 import User from "./Classes/User";
-import { Token } from "./Interface/User";
+import { User as IUser, Token } from "./Interface/User";
 import Collection from "./Classes/Collection";
 
+interface MoreDataOptional {
+    defaultData?: { [key: string]: any };
+    onUserConnect?: (user: User<any, any>) => void;
+    onUserMessage?: (user: User<any, any>, data: { [key: string]: any }) => void;
+    onUserClose?: (user: User<any, any>) => void;
+}
+
+interface MoreData {
+    defaultData: { [key: string]: any };
+    onUserConnect: (user: User<any, any>) => void;
+    onUserMessage: (user: User<any, any>, data: { [key: string]: any }) => void;
+    onUserClose: (user: User<any, any>) => void;
+}
+
 class EventWSServer<UsersData, Storage> {
-    constructor(config: IServerConfig | undefined, storage: { [key: string]: any }, defaultData = { }) {
+    constructor(
+        config: IServerConfig | undefined,
+        storage: { [key: string]: any },
+        moreData: MoreDataOptional | undefined = {
+            defaultData: { },
+            onUserConnect: () => {},
+            onUserMessage: () => {},
+            onUserClose: () => {}
+        }
+    ) {
         this.ws = new server(config);
 
         this.ws.on("connect", (c) => {
@@ -16,18 +39,17 @@ class EventWSServer<UsersData, Storage> {
                         () => Math.floor(Math.random() * 10)
                     ).join("")
                 )
-            ).toString(16)
+            ).toString(16);
 
-            let user = new User<UsersData>(token, c, defaultData)
+            let user = new User<UsersData, {}>(token, c, (moreData as MoreData)?.defaultData);
 
-            this.usersMap.set(token, user)
+            this.usersMap.set(user.getToken, user);
 
-            user.send("CREATE_TOKEN", {
-                token
-            })
+            (moreData as MoreData).onUserConnect(user);
 
-            c.on("message", (msg) => {
+            c.on("message", async (msg) => {
                 if (msg.type !== "utf8") return
+                (moreData as MoreData).onUserMessage(user, JSON.parse(msg.utf8Data));
 
                 try {
                     let { token, event: eventName, data } = JSON.parse(msg.utf8Data)
@@ -43,18 +65,22 @@ class EventWSServer<UsersData, Storage> {
                 }
             })
 
-            c.on("close", () => this.deleteUser(user.token))
+            c.on("close", () => {
+                (moreData as MoreData).onUserClose(user);
+
+                this.deleteUser(user.getToken);
+            })
         })
 
         this.storage = new Collection<string, any>().setJsonToMap(storage);
     }
 
     private ws: server;
-    private usersMap = new Collection<string, User<UsersData>>()
-    private events = new Collection<string, ServerEvent<UsersData, Storage, any>>()
+    private usersMap = new Collection<string, User<UsersData, {}>>()
+    private events = new Collection<string, ServerEvent<UsersData, Storage, any, any>>()
     private storage: Collection<string, any>;
     
-    public getUser(id: Token): User<UsersData> | undefined {
+    public getUser(id: Token): User<UsersData, {}> | undefined {
         return this.usersMap.get(id);
     }
 
@@ -75,12 +101,16 @@ class EventWSServer<UsersData, Storage> {
         return true;
     }
 
-    public getEvent(event: string): ServerEvent<UsersData, Storage, any> | undefined {
+    public getEvent(event: string): ServerEvent<UsersData, Storage, any, any> | undefined {
         return this.events.get(event);
     }
 
-    public setEvents(events: ServerEvent<UsersData, Storage, any>[]) {
+    public setEvents(events: ServerEvent<UsersData, Storage, any, any>[]) {
         events.forEach(event => this.events.set(event.typeEvent, event))
+    }
+
+    get getStorage(): Storage {
+        return this.storage.toJson() as Storage
     }
 }
 

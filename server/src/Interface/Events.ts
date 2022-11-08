@@ -48,7 +48,7 @@ export interface EventsServerData {
   }
 }
 
-export interface EventClientData {
+export interface EventsClientData {
   "CREATE_ROOM": {
     game: "morpion" | "4pow";
   },
@@ -65,44 +65,4 @@ export interface EventClientData {
     col: number;
     row: null;
   }
-}
-
-export interface User {
-  token: string;
-  c: connection;
-  room: string | null;
-}
-
-export interface Users {
-  [key: string]: User;
-}
-
-export interface Game {
-  type: "morpion" | "4pow";
-  timestamp: number;
-  creator: string;
-  invite: string | null;
-  whoStart: number;
-  count: number;
-  board: Board;
-}
-
-export interface Games {
-  [key: string]: Game;
-}
-
-export interface EventFile {
-  eventType: Events;
-  event: (
-    c: connection,
-    data: any,
-    token: string,
-    user: User,
-    users: {
-      [code: string]: User
-    },
-    games: {
-      [code: string]: Game
-    }
-  ) => any;
 }

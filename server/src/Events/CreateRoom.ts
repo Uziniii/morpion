@@ -1,50 +1,28 @@
 import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
-import { EventFile, EventClientData, Game, Events } from "../Interface/Events";
+import { EventsClientData, EventsServerData, Events } from "../Interface/Events";
+import UserData from "../Interface/UserData";
+import Storage from "../Interface/Storage";
+import Room from "../Classes/Room";
 
-export new ServerEvent({
-  eventType: Events.CREATE_ROOM,
+new ServerEvent<UserData, Storage, EventsClientData[Events.CREATE_ROOM], EventsServerData>({
+  typeEvent: Events.CREATE_ROOM,
   event({
     data,
     server,
-    storage,
-    type,
+    storage: {
+      roomMap
+    },
     user
   }) {
-    user.room = (
-      Date.now() +
-      +(
-        [...Array(10)].map(
-          () => Math.floor(Math.random() * 10)
-        ).join("")
-      )
-    ).toString(16)
+    let game = new Room(roomMap, data.game, user.getToken)
 
-    let game: Game = {
-      type: data.game,
-      timestamp: Date.now(),
-      creator: token,
-      invite: null,
-      whoStart: Math.round(Math.random()),
-      count: 0,
-      board: []
-    }
+    if (game.type === false) return;
 
-    switch (data.game) {
-      case "morpion":
-        game.board = [...Array(3).fill([...Array(3).fill("")])]
+    roomMap.set(game.getId, game)
+    user.data.room = game.getId
 
-        c.send(JSON.stringify({
-          event: Events.CREATE_ROOM,
-          data: {
-            inviteCode: user.room
-          }
-        }))
-        break;
-
-      default:
-        break;
-    }
-
-    games[user.room] = game
+    user.send<Events.CREATE_ROOM>(Events.CREATE_ROOM, {
+      inviteCode: game.getId
+    })
   }
 })
