@@ -1,7 +1,6 @@
 import http from "http"
 import express from "express"
-import { readdirSync } from "fs"
-import { Events, EventsClientData } from "./Interface/Events"
+import { Events, EventsServerData } from "./Interface/Events"
 import { join } from "path"
 import EventWSServer from "../../websocket/server/WSServer"
 import UserData from "./Interface/UserData"
@@ -10,7 +9,8 @@ import Collection from "../../websocket/server/Classes/Collection"
 
 const app = express()
 const server = http.createServer(app)
-const ws = new EventWSServer<UserData, Storage>(
+
+const ws = new EventWSServer<UserData, Storage, EventsServerData>(
   {
     httpServer: server,
     autoAcceptConnections: true
@@ -34,6 +34,10 @@ const ws = new EventWSServer<UserData, Storage>(
     },
   }
 )
+
+ws.setEvents([
+
+])
 
 app.use("/assets", express.static(join(__dirname, "../dist/assets")))
 

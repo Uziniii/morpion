@@ -18,7 +18,7 @@ interface MoreData {
     onUserClose: (user: User<any, any>) => void;
 }
 
-class EventWSServer<UsersData, Storage> {
+class EventWSServer<UsersData, Storage, EventsServerData> {
     constructor(
         config: IServerConfig | undefined,
         storage: { [key: string]: any },
@@ -41,7 +41,7 @@ class EventWSServer<UsersData, Storage> {
                 )
             ).toString(16);
 
-            let user = new User<UsersData, {}>(token, c, (moreData as MoreData)?.defaultData);
+            let user = new User<UsersData, EventsServerData>(token, c, (moreData as MoreData)?.defaultData);
 
             this.usersMap.set(user.getToken, user);
 
@@ -76,11 +76,11 @@ class EventWSServer<UsersData, Storage> {
     }
 
     private ws: server;
-    private usersMap = new Collection<string, User<UsersData, {}>>()
+    private usersMap = new Collection<string, User<UsersData, EventsServerData>>()
     private events = new Collection<string, ServerEvent<UsersData, Storage, any, any>>()
     private storage: Collection<string, any>;
     
-    public getUser(id: Token): User<UsersData, {}> | undefined {
+    public getUser(id: Token): User<UsersData, EventsServerData> | undefined {
         return this.usersMap.get(id);
     }
 

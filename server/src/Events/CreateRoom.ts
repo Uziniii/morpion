@@ -4,7 +4,7 @@ import UserData from "../Interface/UserData";
 import Storage from "../Interface/Storage";
 import Room from "../Classes/Room";
 
-new ServerEvent<UserData, Storage, EventsClientData[Events.CREATE_ROOM], EventsServerData>({
+const CREATE_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.CREATE_ROOM], EventsServerData>({
   typeEvent: Events.CREATE_ROOM,
   event({
     data,
@@ -14,9 +14,9 @@ new ServerEvent<UserData, Storage, EventsClientData[Events.CREATE_ROOM], EventsS
     },
     user
   }) {
-    let game = new Room(roomMap, data.game, user.getToken)
+    let game = new Room(roomMap, server, data.game, user.getToken)
 
-    if (game.type === false) return;
+    if (!game.alive) return;
 
     roomMap.set(game.getId, game)
     user.data.room = game.getId
@@ -26,3 +26,5 @@ new ServerEvent<UserData, Storage, EventsClientData[Events.CREATE_ROOM], EventsS
     })
   }
 })
+
+export default CREATE_ROOM

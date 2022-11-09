@@ -1,18 +1,20 @@
 import Collection from "../../../websocket/server/Classes/Collection";
 import { Token } from "../../../websocket/server/Interface/User";
+import EventWSServer from "../../../websocket/server/WSServer";
 import { Board } from "../Interface/Events";
 
 class Room {
     private id: Token;
-    public type: "morpion" | "4pow" | false;
-    public timestamp: number;
+    public type: "morpion" | "4pow";
     public creator: Token;
     public invite: Token | null = null;
     public whoStart: number;
     public count: number = 0;
     public board: Board = [];
+    public alive: boolean = true;
+    public timeout: NodeJS.Timeout;
 
-    constructor (roomMap: Collection<any, any>, type: "morpion" | "4pow", creator: Token) {
+    constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any>, type: "morpion" | "4pow", creator: Token) {
         this.id = (
             Date.now() +
             +(
@@ -21,7 +23,6 @@ class Room {
                 ).join("")
             )
         ).toString(16);
-        this.timestamp = Date.now();
         this.type = type;
         this.creator = creator;
         this.whoStart = Math.floor(Math.random());
@@ -36,8 +37,14 @@ class Room {
                 break;
             
             default:
-                this.type = false;
+                this.alive = false;
         }
+
+        if (!this.alive) roomMap.delete(this.id)
+
+        this.timeout = setTimeout(() => {
+            if (this.invite === null) server;
+        }, 120_000)
     }
 
     public incrementCounter (): number {

@@ -1,29 +1,36 @@
-import { EventFile, EventsClientData, Events } from "../Interface/Events";
+import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
+import { EventsClientData, Events, EventsServerData } from "../Interface/Events";
+import Storage from "../Interface/Storage";
+import UserData from "../Interface/UserData";
 
-export const event: EventFile = {
-  eventType: Events.JOIN_ROOM,
-  event(c, data: EventsClientData[Events.JOIN_ROOM], token, user, users, games) {
-    let game = games[data?.inviteCode]
+const JOIN_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.JOIN_ROOM], EventsServerData>({
+  typeEvent: Events.JOIN_ROOM,
+  event({
+    type,
+    data,
+    server,
+    storage: {
+      roomMap
+    },
+    user 
+  }) {
+    if (data.inviteCode === undefined) return;
 
-    if (game === undefined) c.send(JSON.stringify({
-      event: Events.JOIN_ROOM,
-      data: {
-        error: "Room doesn't exist"
-      }
-    }))
+    let game = roomMap.get(data.inviteCode)
 
-    game.invite = token
-    user.room = data.inviteCode
-
-    let toSend = JSON.stringify({
-      event: Events.JOIN_ROOM,
-      data: {
-        whoStart: games[data.inviteCode].whoStart,
-        game: game.type
-      }
+    if (game === undefined) return user.send<any>(Events.JOIN_ROOM, {
+      error: "Room doesn't exist"
     })
 
-    c.send(toSend)
-    users[game.creator].c.send(toSend)
+    game.setInvite = user.getToken
+    user.data.room = game.getId
+
+    let toSend = {
+      whoStart: game.whoStart,
+      game: game.type
+    }
+
+    user.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, toSend)
+    server.getUser(game.creator)?.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, toSend)
   }
-}
+})
