@@ -1,34 +1,37 @@
-import { Board, EventsClientData, EventFile, Events } from "../Interface/Events";
+import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
+import { Board, EventsClientData, Events, EventsServerData } from "../Interface/Events";
+import Storage from "../Interface/Storage";
+import UserData from "../Interface/UserData";
 
-export const event: EventFile = {
-  eventType: Events.MORPION_PLAY,
-  event(c, data: EventsClientData[Events.MORPION_PLAY], token, user, users, games) {
-    if (user.room === null) return
+const MORPION_PLAY = new ServerEvent<UserData, Storage, EventsClientData[Events.MORPION_PLAY], EventsServerData>({
+  typeEvent: Events.MORPION_PLAY,
+  event({
+    type,
+    data,
+    server,
+    storage: {
+      roomMap
+    },
+    user 
+  }) {
+    if (user.data.room === null) return
 
-    let game = games[user.room]
+    let game = roomMap.get(user.data.room)
 
-    if (game.invite === null) return
+    if (game === undefined || game.invite === null) return
 
-    let creator = users[game.creator]
-    let invite = users[game.invite]
+    let creator = server.getUser(game.creator);
+    let invite = server.getUser(game.invite);
 
-    if (game === undefined) return c.send(JSON.stringify({
-      data: {
-        error: "Your not in a room"
-      }
-    }));
-
+    if (creator === undefined || invite === undefined) return;
     if (data.col === undefined && data.row === undefined) return;
 
-    let playFromWho = game.invite === token ? "invite" : "creator"
+    let playFromWho = game.invite === user.getToken ? "invite" : "creator"
     let wichTurn = game.count % 2 === game.whoStart ? "invite" : "creator"
 
     if (playFromWho !== wichTurn) return
 
-    let boardCol = game.board[data.col].slice()
-
-    boardCol[data.row] = playFromWho === "invite" ? "o" : "x"
-    game.board[data.col] = boardCol
+    game.setCell(data.col, data.row, playFromWho === "invite" ? "o" : "x")
 
     let inviteWin = false
     let win = false
@@ -47,7 +50,7 @@ export const event: EventFile = {
         colJoin === "xxx" ||
         colJoin === "ooo"
       ) {
-        if (token === invite.token) inviteWin = true
+        if (user.getToken === invite.getToken) inviteWin = true
 
         win = true
       }
@@ -66,7 +69,7 @@ export const event: EventFile = {
         }
 
         if (diagonalJoin === "xxx" || diagonalJoin === "ooo") {
-          if (token === invite.token) inviteWin = true
+          if (user.getToken === (invite as any).getToken) inviteWin = true
 
           win = true
         }
@@ -76,36 +79,29 @@ export const event: EventFile = {
       checkDiagonal(game.board.slice().reverse())
     }
 
-    game.count++
+    game.incrementCounter()
 
     if (win || game.count === 9) {
-      creator.c.send(JSON.stringify({
-        event: Events.MORPION_FINISH,
-        data: {
-          win: win ? !inviteWin : undefined,
-          board: game.board
-        }
-      }))
+      creator.send<Events.MORPION_FINISH>(Events.MORPION_FINISH, {
+        win: win ? !inviteWin : undefined,
+        board: game.board
+      })
 
-      invite.c.send(JSON.stringify({
-        event: Events.MORPION_FINISH,
-        data: {
-          win: win ? inviteWin : undefined,
-          board: game.board
-        }
-      }))
+      invite.send<Events.MORPION_FINISH>(Events.MORPION_FINISH, {
+        win: win ? inviteWin : undefined,
+        board: game.board
+      })
 
       return
     } else {
-      let toSend = JSON.stringify({
-        event: Events.MORPION_PLAY,
-        data: {
-          board: game.board
-        }
-      })
+      let toSend = {
+        board: game.board
+      }
 
-      creator.c.send(toSend)
-      invite.c.send(toSend)
+      creator.send<Events.MORPION_PLAY>(Events.MORPION_PLAY, toSend)
+      invite.send<Events.MORPION_PLAY>(Events.MORPION_PLAY, toSend)
     }
   },
-}
+})
+
+export default MORPION_PLAY;

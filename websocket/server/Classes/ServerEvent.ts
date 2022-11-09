@@ -1,7 +1,7 @@
 import EventWSServer from "../WSServer";
 import User from "./User";
 
-type eventFunc<UsersData, Storage, EventData, EventsServerData> = ({
+type eventFunc<UsersData, Storage, EventsClient, EventsServerData> = ({
     type,
     data,
     server,
@@ -9,22 +9,22 @@ type eventFunc<UsersData, Storage, EventData, EventsServerData> = ({
     user
 }: {
     type: string,
-    data: EventData,
-    server: EventWSServer<UsersData, Storage>,
+    data: EventsClient,
+    server: EventWSServer<UsersData, Storage, EventsServerData>,
     storage: Storage,
     user: User<UsersData, EventsServerData>
 }) => any;
 
-class ServerEvent<UsersData, Storage, EventData, EventsServerData> {
+class ServerEvent<UsersData, Storage, EventsClient, EventsServerData> {
     public typeEvent: string;
-    protected event: eventFunc<UsersData, Storage, EventData, EventsServerData>;
+    protected event: eventFunc<UsersData, Storage, EventsClient, EventsServerData>;
 
     constructor({
         typeEvent,
         event
     }: {
         typeEvent: string;
-        event: eventFunc<UsersData, Storage, EventData, EventsServerData>;
+        event: eventFunc<UsersData, Storage, EventsClient, EventsServerData>;
     }) {
         this.typeEvent = typeEvent;
         this.event = event;

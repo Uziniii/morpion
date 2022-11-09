@@ -1,8 +1,21 @@
-import { EventFile, EventsClientData, Game, Events } from "../Interface/Events";
+import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
+import { EventsClientData, Events, EventsServerData } from "../Interface/Events";
+import Storage from "../Interface/Storage";
+import UserData from "../Interface/UserData";
 
-export const event: EventFile = {
-    eventType: Events.REMATCH,
-    event(c, data: EventsClientData[Events.REMATCH], token, user, users, games) {
-
+const REMATCH = new ServerEvent<UserData, Storage, EventsClientData[Events.REMATCH], EventsServerData>({
+    typeEvent: Events.REMATCH,
+    event({
+        type,
+        data,
+        server,
+        storage: {
+            roomMap
+        },
+        user
+    }) {
+        
     }
-}
+})
+
+export default REMATCH;

@@ -8,7 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "b:server": "tsc --build server.tsconfig.json --watch",
-    "s:server": "node ./server/out/serveur/index.js",
+    "s:server": "node ./server/out/server/src/index.js",
     "server:test": "node ./server/test/wsClientTest.js"
   },
   "dependencies": {

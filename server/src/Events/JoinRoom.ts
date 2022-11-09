@@ -34,3 +34,5 @@ const JOIN_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.JOI
     server.getUser(game.creator)?.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, toSend)
   }
 })
+
+export default JOIN_ROOM;

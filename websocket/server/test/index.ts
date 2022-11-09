@@ -24,7 +24,7 @@ interface Storage {
     RoomManager: RoomManager
 }
 
-const wsServer = new WebSocketServer<UsersData, Storage>(
+const wsServer = new WebSocketServer<UsersData, Storage, {}>(
     {
         httpServer: server,
         autoAcceptConnections: true

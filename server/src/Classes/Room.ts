@@ -14,7 +14,7 @@ class Room {
     public alive: boolean = true;
     public timeout: NodeJS.Timeout;
 
-    constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any>, type: "morpion" | "4pow", creator: Token) {
+    constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any, any>, type: "morpion" | "4pow", creator: Token) {
         this.id = (
             Date.now() +
             +(
@@ -29,11 +29,11 @@ class Room {
 
         switch (type) {
             case "morpion":
-                this.board = [...Array(3).fill([...Array(3).fill("")])];
+                this.board = [...Array(3)].map(() => [...Array(3).fill("")]);
                 break;
             
             case "4pow":
-                this.board = [...Array(6).fill([...Array(7).fill("")])];
+                this.board = [...Array(6)].map(() => [...Array(7).fill("")]);
                 break;
             
             default:
@@ -49,6 +49,10 @@ class Room {
 
     public incrementCounter (): number {
         return this.count++;
+    }
+
+    public setCell (col: number, row: number, who: "x" | "o"): void {
+        this.board[col][row] = who;
     }
 
     public set setInvite (invite: Token) {
