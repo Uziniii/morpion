@@ -6,6 +6,13 @@ import EventWSServer from "../../websocket/server/WSServer"
 import UserData from "./Interface/UserData"
 import Storage from "./Interface/Storage"
 import Collection from "../../websocket/server/Classes/Collection"
+import {
+  CREATE_ROOM,
+  JOIN_ROOM,
+  LEAVE_ROOM,
+  MORPION_PLAY,
+  REMATCH
+} from "./Events/.index"
 
 const app = express()
 const server = http.createServer(app)
@@ -36,10 +43,22 @@ const ws = new EventWSServer<UserData, Storage, EventsServerData>(
 )
 
 ws.setEvents([
-
+  CREATE_ROOM,
+  JOIN_ROOM,
+  LEAVE_ROOM,
+  MORPION_PLAY,
+  REMATCH
 ])
 
 app.use("/assets", express.static(join(__dirname, "../dist/assets")))
+
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  console.log(`Connection : ${req.ip} : ${req.url}`);
+  next();
+});
 
 app.get("/", (req, res) => {
   res.sendFile(join(__dirname, "../dist/index.html"))

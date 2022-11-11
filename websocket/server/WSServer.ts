@@ -29,6 +29,11 @@ class EventWSServer<UsersData, Storage, EventsServerData> {
             onUserClose: () => {}
         }
     ) {
+        if (moreData.defaultData === undefined) moreData.defaultData = {}
+        if (moreData.onUserConnect === undefined) moreData.onUserConnect = () => { }
+        if (moreData.onUserMessage === undefined) moreData.onUserMessage = () => { }
+        if (moreData.onUserClose === undefined) moreData.onUserClose = () => { }
+
         this.ws = new server(config);
 
         this.ws.on("connect", (c) => {

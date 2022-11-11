@@ -6,8 +6,8 @@ import Room from './Components/Room'
 let game: "morpion" | "4pow";
 let userType: "invite" | "creator"
 
-// const url = (window as any).PROD as boolean ? window.location.host : "localhost:3000"
-const url = window.location.host
+const url = (window as any).PROD as boolean ? window.location.host : "localhost:3000"
+// const url = window.location.host
 
 let ws = new WebSocket(`ws://${url}/`, "echo-protocol")
 
