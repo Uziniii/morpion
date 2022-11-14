@@ -1,4 +1,4 @@
-import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
+import ServerEvent from "../../../websocket/Classes/ServerEvent";
 import { EventsClientData, EventsServerData, Events } from "../Interface/Events";
 import UserData from "../Interface/UserData";
 import Storage from "../Interface/Storage";

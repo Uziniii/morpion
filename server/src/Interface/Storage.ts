@@ -1,5 +1,5 @@
-import Collection from "../../../websocket/server/Classes/Collection";
-import { Token } from "../../../websocket/server/Interface/User";
+import Collection from "../../../websocket/Classes/Collection";
+import { Token } from "../../../websocket/Interface/User";
 import Room from "../Classes/Room";
 
 interface Storage {

@@ -1,15 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { EventsServerData, Events } from "../../server/src/Interface/Events"
+import { EventsServerData, Events, EventsClientData, Games, UserType } from "../../server/src/Interface/Events"
+import { sendEventFunc } from "../Hooks/wsEventHook";
 import FourPow from "./Boards/FourPow";
 import Morpion from "./Boards/Morpion";
 
 export interface BoardProps {
   url: string;
-  game: "morpion" | "4pow";
+  game: Games;
   invitePropsCode: string;
-  userType: "creator" | "invite";
+  userType: UserType;
   ws: WebSocket;
-  token: string;
+  sendEvent: sendEventFunc<EventsClientData>;
   setInRoom: (value: boolean) => void;
 }
 
@@ -18,14 +19,14 @@ export default function Board({
   invitePropsCode,
   userType,
   ws,
-  token,
+  sendEvent,
   setInRoom
 }: BoardProps) {
   const [gameType, setGameType] = useState(game)
 
   let baseBoard = useMemo(() => {
     if (gameType === "morpion") return [...Array(3)].map(x => [...Array(3)].fill(""))
-    else if (gameType === "4pow") return [...Array(6)].map(x => [...Array(7)].fill(""))
+    else if (gameType === "connect4") return [...Array(6)].map(x => [...Array(7)].fill(""))
 
     return [...Array(3)].map(x => [...Array(3)].fill(""))
   }, [gameType])
@@ -75,22 +76,14 @@ export default function Board({
 
     console.log("play");
 
-    ws.send(JSON.stringify({
-      token,
-      event: gameType === "morpion" ? Events.MORPION_PLAY : Events.POW4_PLAY,
-      data: {
-        col,
-        row: gameType === "morpion" ? row : null
-      }
-    }))
+    sendEvent<Events.MORPION_PLAY | Events.CONNECT4_PLAY>(gameType === "morpion" ? Events.MORPION_PLAY : Events.CONNECT4_PLAY, {
+      col,
+      row: gameType === "morpion" ? row : null
+    })
   }
 
   function backToMenu() {
-    ws.send(JSON.stringify({
-      token,
-      event: Events.LEAVE_ROOM,
-      data: {}
-    }))
+    sendEvent<Events.LEAVE_ROOM>(Events.LEAVE_ROOM, {})
   }
 
   function rematch() {
@@ -110,6 +103,7 @@ export default function Board({
         switch (event) {
           case Events.CREATE_ROOM:
             data = data as EventsServerData[typeof event]
+          console.log(event)
 
             setInviteCode(data.inviteCode)
             break
@@ -175,7 +169,7 @@ export default function Board({
       rematch={rematch}
     />
   )
-  else if (gameType === "4pow") return (
+  else if (gameType === "connect4") return (
     <FourPow
       onPlay={onPlay}
       inviteCode={inviteCode}

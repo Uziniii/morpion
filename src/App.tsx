@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
-import { Events, EventsServerData } from '../server/src/Interface/Events';
+import { Events, EventsServerData, EventsClientData, Games, UserType } from '../server/src/Interface/Events';
 import Board from './Components/Board';
 import Room from './Components/Room'
+import wsEventHook, { sendEventFunc } from './Hooks/wsEventHook';
 
-let game: "morpion" | "4pow";
-let userType: "invite" | "creator"
+let game: Games;
+let userType: UserType;
 
 const url = (window as any).PROD as boolean ? window.location.host : "localhost:3000"
 // const url = window.location.host
@@ -13,6 +14,7 @@ let ws = new WebSocket(`ws://${url}/`, "echo-protocol")
 
 function App () {
   const [token, setToken] = useState<string>("")
+  const sendEvent: sendEventFunc<EventsClientData> = wsEventHook(ws, token)
 
   useEffect(() => {
     console.count("app")
@@ -42,18 +44,14 @@ function App () {
   const [inviteCode, setInviteCode] = useState("")
   const [inRoom, setInRoom] = useState(false)
 
-  async function roomEvent(event: "create" | "join", gameType?: "morpion" | "4pow"): Promise<boolean> {
+  async function roomEvent(event: "create" | "join", gameType?: Games): Promise<boolean> {
     if (event === "create" && gameType !== undefined) {
       game = gameType
       userType = "creator"
 
-      ws.send(JSON.stringify({
-        token,
-        event: "CREATE_ROOM",
-        data: {
-          game
-        }
-      }))
+      sendEvent<Events.CREATE_ROOM>(Events.CREATE_ROOM, {
+        game: gameType
+      })
 
       setInRoom(true)
     } else if (event === "join") {
@@ -62,13 +60,9 @@ function App () {
       if (res.roomExist) {
         userType = "invite"
 
-        ws.send(JSON.stringify({
-          token,
-          event: "JOIN_ROOM",
-          data: {
-            inviteCode
-          }
-        }))
+        sendEvent<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
+          inviteCode
+        })
 
         setInRoom(true)
       }
@@ -90,12 +84,12 @@ function App () {
       {
         inRoom && 
         <Board 
-          ws={ws} 
-          token={token} 
+          ws={ws}
           url={url} 
           game={game} 
           invitePropsCode={inviteCode} 
           userType={userType}
+          sendEvent={sendEvent}
           setInRoom={setInRoom}
         />
       }

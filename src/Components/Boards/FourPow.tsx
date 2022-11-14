@@ -22,6 +22,6 @@ export default function FourPow({
   rematch
 }: Props) {
   return <div>
-
+    
   </div>
 }

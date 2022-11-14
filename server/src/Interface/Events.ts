@@ -2,6 +2,10 @@ import { connection } from "websocket"
 
 export type Board = string[][]
 
+export type Games = "morpion" | "connect4"
+
+export type UserType = "invite" | "creator"
+
 export enum Events {
   CREATE_TOKEN = "CREATE_TOKEN",
   CREATE_ROOM = "CREATE_ROOM",
@@ -10,8 +14,8 @@ export enum Events {
   REMATCH = "REMATCH",
   MORPION_PLAY = "MORPION_PLAY",
   MORPION_FINISH = "MORPION_FINISH",
-  POW4_PLAY = "POW4_PLAY",
-  POW4_FINISH = "POW4_FINISH",
+  CONNECT4_PLAY = "CONNECT4_PLAY",
+  CONNECT4_FINISH = "CONNECT4_FINISH",
 }
 
 export interface EventsServerData {
@@ -23,14 +27,14 @@ export interface EventsServerData {
   },
   "JOIN_ROOM": {
     whoStart: number;
-    game: "morpion" | "4pow";
+    game: Games;
   },
   "LEAVE_ROOM": {
     who: boolean;
   },
   "REMATCH": {
     whoStart: number;
-    game: "morpion" | "4pow";
+    game: Games;
   },
   "MORPION_PLAY": {
     board: Board;
@@ -39,10 +43,10 @@ export interface EventsServerData {
     board: Board;
     win: boolean | undefined;
   },
-  "POW4_PLAY": {
+  "CONNECT4_PLAY": {
     board: Board;
   },
-  "POW4_FINISH": {
+  "CONNECT4_FINISH": {
     board: Board;
     win: boolean | undefined;
   }
@@ -50,7 +54,7 @@ export interface EventsServerData {
 
 export interface EventsClientData {
   "CREATE_ROOM": {
-    game: "morpion" | "4pow";
+    game: Games;
   },
   "JOIN_ROOM": {
     inviteCode: string;
@@ -61,7 +65,7 @@ export interface EventsClientData {
     col: number;
     row: number;
   },
-  "POW4_PLAY": {
+  "CONNECT4_PLAY": {
     col: number;
     row: null;
   }

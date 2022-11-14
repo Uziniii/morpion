@@ -1,4 +1,5 @@
-import ServerEvent from "../../../websocket/server/Classes/ServerEvent";
+import ServerEvent from "../../../websocket/Classes/ServerEvent";
+import Room from "../Classes/Room";
 import { EventsClientData, Events, EventsServerData } from "../Interface/Events";
 import Storage from "../Interface/Storage";
 import UserData from "../Interface/UserData";
@@ -14,7 +15,14 @@ const REMATCH = new ServerEvent<UserData, Storage, EventsClientData[Events.REMAT
         },
         user
     }) {
-        
+        const oldGame = roomMap.get(user.getToken)
+
+        if (oldGame === undefined) return
+
+        const newGame = new Room(roomMap, server, oldGame.type, user.getToken, oldGame.getId)
+
+        roomMap.set(newGame.getId, newGame)
+        roomMap.delete(oldGame.getId)
     }
 })
 

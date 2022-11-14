@@ -1,17 +1,18 @@
 import { useState } from "react"
+import { Games } from "../../server/src/Interface/Events";
 
 interface Props {
   setInviteCode: (value: string) => void,
   inviteCode: string
-  roomEvent: (event: "create" | "join", game?: "morpion" | "4pow") => Promise<boolean>;
+  roomEvent: (event: "create" | "join", game?: Games) => Promise<boolean>;
 }
 
 export default function Room({ roomEvent, setInviteCode, inviteCode }: Props) {
-  let [game, setGame] = useState<"morpion" | "4pow">("morpion")
+  let [game, setGame] = useState<Games>("morpion")
   let [codeFound, setCodeFound] = useState(true)
 
   async function onClickRoom(event: "create" | "join") {
-    if (event === "create") return roomEvent("create", "morpion")
+    if (event === "create") return roomEvent("create", game)
     else if (event === "join") {
       if (!(await roomEvent("join"))) setCodeFound(false)
     }
@@ -36,7 +37,7 @@ export default function Room({ roomEvent, setInviteCode, inviteCode }: Props) {
       <div className="create-room">
         <div className="flex justify-around border-2 border-white">
           <button onClick={() => setGame("morpion")} className={game === "morpion" ? "border-2" : ""}>Morpion</button>
-          <button onClick={() => setGame("4pow")} className={game === "4pow" ? "border-2" : ""}>Puissance 4</button>
+          <button onClick={() => setGame("connect4")} className={game === "connect4" ? "border-2" : ""}>Puissance 4</button>
         </div>
         <button onClick={() => onClickRoom("create")}>Créer une salle</button>
       </div>

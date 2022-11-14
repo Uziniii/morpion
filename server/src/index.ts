@@ -2,10 +2,10 @@ import http from "http"
 import express from "express"
 import { Events, EventsServerData } from "./Interface/Events"
 import { join } from "path"
-import EventWSServer from "../../websocket/server/WSServer"
+import EventWSServer from "../../websocket/WSServer"
 import UserData from "./Interface/UserData"
 import Storage from "./Interface/Storage"
-import Collection from "../../websocket/server/Classes/Collection"
+import Collection from "../../websocket/Classes/Collection"
 import {
   CREATE_ROOM,
   JOIN_ROOM,

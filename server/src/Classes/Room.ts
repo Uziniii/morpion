@@ -1,11 +1,11 @@
-import Collection from "../../../websocket/server/Classes/Collection";
-import { Token } from "../../../websocket/server/Interface/User";
-import EventWSServer from "../../../websocket/server/WSServer";
-import { Board } from "../Interface/Events";
+import Collection from "../../../websocket/Classes/Collection";
+import { Token } from "../../../websocket/Interface/User";
+import EventWSServer from "../../../websocket/WSServer";
+import { Board, Games } from "../Interface/Events";
 
 class Room {
     private id: Token;
-    public type: "morpion" | "4pow";
+    public type: Games;
     public creator: Token;
     public invite: Token | null = null;
     public whoStart: number;
@@ -14,8 +14,8 @@ class Room {
     public alive: boolean = true;
     public timeout: NodeJS.Timeout;
 
-    constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any, any>, type: "morpion" | "4pow", creator: Token) {
-        this.id = (
+    constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any, any>, type: Games, creator: Token, id?: string) {
+        this.id = id ?? (
             Date.now() +
             +(
                 [...Array(10)].map(
@@ -32,7 +32,7 @@ class Room {
                 this.board = [...Array(3)].map(() => [...Array(3).fill("")]);
                 break;
             
-            case "4pow":
+            case "connect4":
                 this.board = [...Array(6)].map(() => [...Array(7).fill("")]);
                 break;
             

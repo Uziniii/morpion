@@ -2,7 +2,7 @@ import WebSocketServer from "../WSServer";
 import http from "http"
 import express from "express"
 import ServerEvent from "../Classes/ServerEvent";
-import { EventsClientData } from "../../../server/src/Interface/Events"
+import { EventsClientData } from "../../server/src/Interface/Events"
 import { w3cwebsocket } from "websocket"
 
 interface UsersData {
