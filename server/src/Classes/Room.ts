@@ -13,6 +13,7 @@ class Room {
     public board: Board = [];
     public alive: boolean = true;
     public timeout: NodeJS.Timeout;
+    public rematch: boolean = false;
 
     constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any, any>, type: Games, creator: Token, id?: string) {
         this.id = id ?? (

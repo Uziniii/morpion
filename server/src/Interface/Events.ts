@@ -33,8 +33,7 @@ export interface EventsServerData {
     who: boolean;
   },
   "REMATCH": {
-    whoStart: number;
-    game: Games;
+    who: boolean;
   },
   "MORPION_PLAY": {
     board: Board;

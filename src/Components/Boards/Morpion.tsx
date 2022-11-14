@@ -1,3 +1,5 @@
+import AfterWinMenu from "../AfterWinMenu";
+
 interface Props {
   board: string[][];
   inviteCode: string;
@@ -7,6 +9,7 @@ interface Props {
   win: boolean | undefined | null;
   backToMenu: () => void;
   oppStillOn: boolean;
+  rematchSuggest: boolean;
   rematch: () => void;
 }
 
@@ -19,6 +22,7 @@ export default function Morpion({
   win,
   backToMenu,
   oppStillOn,
+  rematchSuggest,
   rematch 
 }: Props) {
   return (
@@ -44,7 +48,13 @@ export default function Morpion({
           </div>
         })}
       </div>
-      { win !== null && <button onClick={() => backToMenu()}className="back-to-menu">Revenir au menu</button> }
+      <AfterWinMenu 
+        win={win}
+        oppStillOn={oppStillOn}
+        rematchSuggest={rematchSuggest}
+        backToMenu={backToMenu}
+        rematch={rematch}
+      />
     </div>
   )
 }

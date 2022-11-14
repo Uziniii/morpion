@@ -23,6 +23,11 @@ const LEAVE_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.LE
 
         if (invite === undefined || creator === undefined) return;
 
+        invite.data.room = null
+        creator.data.room = null
+
+        roomMap.delete(game.getId)
+
         invite.send<Events.LEAVE_ROOM>(Events.LEAVE_ROOM, {
             who: user.getToken === invite.getToken
         })

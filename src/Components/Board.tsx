@@ -39,6 +39,7 @@ export default function Board({
   const [showCode, setShowCode] = useState(userType === "creator")
   const [win, setWin] = useState<boolean | undefined | null>(null)
   const [oppStillOn, setOppStillOn] = useState(true)
+  const [rematchSuggest, setRematchSuggest] = useState(false)
 
   let [topSentence, wichTurn] = useMemo(() => {
     if (win !== null) {
@@ -87,7 +88,7 @@ export default function Board({
   }
 
   function rematch() {
-
+    sendEvent<Events.REMATCH>(Events.REMATCH, {})
   }
 
   useEffect(() => {
@@ -143,6 +144,14 @@ export default function Board({
             } else setOppStillOn(false)
             break;
 
+          case Events.REMATCH:
+            data = data as EventsServerData[typeof event]
+
+            console.log(data);
+            
+            // data.
+            break;
+
           default:
             break;
         }
@@ -166,6 +175,7 @@ export default function Board({
       win={win}
       backToMenu={backToMenu}
       oppStillOn={oppStillOn}
+      rematchSuggest={rematchSuggest}
       rematch={rematch}
     />
   )
