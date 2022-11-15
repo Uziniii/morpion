@@ -9,7 +9,7 @@ interface Props {
   win: boolean | undefined | null;
   backToMenu: () => void;
   oppStillOn: boolean;
-  rematchSuggest: boolean;
+  whoRematch: boolean | undefined;
   rematch: () => void;
 }
 
@@ -22,7 +22,7 @@ export default function Morpion({
   win,
   backToMenu,
   oppStillOn,
-  rematchSuggest,
+  whoRematch,
   rematch 
 }: Props) {
   return (
@@ -51,7 +51,7 @@ export default function Morpion({
       <AfterWinMenu 
         win={win}
         oppStillOn={oppStillOn}
-        rematchSuggest={rematchSuggest}
+        whoRematch={whoRematch}
         backToMenu={backToMenu}
         rematch={rematch}
       />

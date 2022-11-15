@@ -13,7 +13,7 @@ class Room {
     public board: Board = [];
     public alive: boolean = true;
     public timeout: NodeJS.Timeout;
-    public rematch: boolean = false;
+    public rematch: Token | undefined = undefined;
 
     constructor(roomMap: Collection<any, any>, server: EventWSServer<any, any, any>, type: Games, creator: Token, id?: string) {
         this.id = id ?? (
@@ -26,7 +26,7 @@ class Room {
         ).toString(16);
         this.type = type;
         this.creator = creator;
-        this.whoStart = Math.floor(Math.random());
+        this.whoStart = Math.round(Math.random());
 
         switch (type) {
             case "morpion":

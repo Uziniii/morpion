@@ -14,7 +14,9 @@ const LEAVE_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.LE
         },
         user
     }) {
-        const game = roomMap.get(user.getToken)
+        if (user.data.room === null) return
+
+        const game = roomMap.get(user.data.room)
 
         if (game === undefined || game?.invite === null) return;
 
@@ -33,7 +35,7 @@ const LEAVE_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.LE
         })
 
         creator.send<Events.LEAVE_ROOM>(Events.LEAVE_ROOM, {
-            who: user.getToken === invite.getToken
+            who: user.getToken === creator.getToken
         })
     }
 })

@@ -91,8 +91,6 @@ const MORPION_PLAY = new ServerEvent<UserData, Storage, EventsClientData[Events.
         win: win ? inviteWin : undefined,
         board: game.board
       })
-
-      return
     } else {
       let toSend = {
         board: game.board

@@ -39,7 +39,7 @@ export default function Board({
   const [showCode, setShowCode] = useState(userType === "creator")
   const [win, setWin] = useState<boolean | undefined | null>(null)
   const [oppStillOn, setOppStillOn] = useState(true)
-  const [rematchSuggest, setRematchSuggest] = useState(false)
+  const [whoRematch, setWhoRematch] = useState<boolean | undefined>(undefined)
 
   let [topSentence, wichTurn] = useMemo(() => {
     if (win !== null) {
@@ -92,6 +92,10 @@ export default function Board({
   }
 
   useEffect(() => {
+    if (invitePropsCode !== "") sendEvent<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
+      inviteCode
+    })
+
     ws.onmessage = (msg) => {
       try {
         let { event, data }: {
@@ -99,18 +103,24 @@ export default function Board({
           data: EventsServerData[Events]
         } = JSON.parse(msg.data)
 
-        console.log(data);
+        console.log({ event, data});
 
         switch (event) {
           case Events.CREATE_ROOM:
             data = data as EventsServerData[typeof event]
-          console.log(event)
 
             setInviteCode(data.inviteCode)
             break
 
           case Events.JOIN_ROOM:
             data = data as EventsServerData[typeof event]
+
+            if (data.rematch) {
+              setBoard(baseBoard)
+              setWhoRematch(undefined)
+              setCounter(0)
+              setWin(null)
+            }
 
             setInviteJoin(true)
 
@@ -147,9 +157,7 @@ export default function Board({
           case Events.REMATCH:
             data = data as EventsServerData[typeof event]
 
-            console.log(data);
-            
-            // data.
+            if (whoRematch === undefined) setWhoRematch(data.who)
             break;
 
           default:
@@ -175,7 +183,7 @@ export default function Board({
       win={win}
       backToMenu={backToMenu}
       oppStillOn={oppStillOn}
-      rematchSuggest={rematchSuggest}
+      whoRematch={whoRematch}
       rematch={rematch}
     />
   )

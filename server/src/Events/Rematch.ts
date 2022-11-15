@@ -26,16 +26,16 @@ const REMATCH = new ServerEvent<UserData, Storage, EventsClientData[Events.REMAT
 
         if (invite === undefined || creator === undefined) return;
 
-        if (!game.rematch) {
+        if (game.rematch === undefined) {
             invite.send<Events.REMATCH>(Events.REMATCH, {
                 who: user.getToken === invite.getToken
             })
-    
+
             creator.send<Events.REMATCH>(Events.REMATCH, {
-                who: user.getToken === invite.getToken
+                who: user.getToken === creator.getToken
             })
 
-            game.rematch = true;
+            game.rematch = user.getToken;
 
             return
         }
@@ -43,14 +43,17 @@ const REMATCH = new ServerEvent<UserData, Storage, EventsClientData[Events.REMAT
         const newGame = new Room(roomMap, server, game.type, user.getToken, game.getId)
 
         roomMap.set(newGame.getId, newGame)
-        roomMap.delete(game.getId)
+
+        console.log(newGame);
 
         invite.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
+            rematch: true,
             game: newGame.type,
             whoStart: newGame.whoStart
         })
 
         creator.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
+            rematch: true,
             game: newGame.type,
             whoStart: newGame.whoStart
         })

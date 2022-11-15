@@ -26,6 +26,7 @@ export interface EventsServerData {
     inviteCode: string;
   },
   "JOIN_ROOM": {
+    rematch?: true;
     whoStart: number;
     game: Games;
   },

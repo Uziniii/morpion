@@ -21,6 +21,8 @@ function App () {
 
     try {
       ws.onmessage = msg => {
+        if (token !== "") return
+
         let { event, data }: {
           event: keyof EventsServerData,
           data: EventsServerData[Events]
@@ -29,9 +31,9 @@ function App () {
         if (event === "CREATE_TOKEN") setToken((data as EventsServerData[typeof event]).token)
       }
 
-      ws.onclose = () => {
+      ws.addEventListener("close", () => {
         ws = new WebSocket(`ws://${url}/`, "echo-protocol")
-      }
+      })
     } catch (error) {
       console.log(error);
     }
@@ -59,10 +61,6 @@ function App () {
 
       if (res.roomExist) {
         userType = "invite"
-
-        sendEvent<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
-          inviteCode
-        })
 
         setInRoom(true)
       }

@@ -23,7 +23,7 @@
     @apply m-0 !important
   }
 
-  .room div.create-room > button, .room div.join-room button, .morpion > div > button.back-to-menu, .morpion > div > button.rematch {
+  .room div.create-room > button, .room div.join-room button, .morpion button#back-to-menu, .morpion button#rematch {
     @apply w-full h-16 mt-2 text-center text-black bg-white border-4 border-white
   }
   
