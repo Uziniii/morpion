@@ -34,7 +34,7 @@ class Room {
                 break;
             
             case "connect4":
-                this.board = [...Array(6)].map(() => [...Array(7).fill("")]);
+                this.board = [...Array(7)].map(() => [...Array(6).fill("")]);
                 break;
             
             default:

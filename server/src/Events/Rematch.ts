@@ -42,9 +42,9 @@ const REMATCH = new ServerEvent<UserData, Storage, EventsClientData[Events.REMAT
 
         const newGame = new Room(roomMap, server, game.type, user.getToken, game.getId)
 
-        roomMap.set(newGame.getId, newGame)
+        newGame.setInvite = invite.getToken
 
-        console.log(newGame);
+        roomMap.set(newGame.getId, newGame)
 
         invite.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
             rematch: true,

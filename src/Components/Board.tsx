@@ -26,7 +26,7 @@ export default function Board({
 
   let baseBoard = useMemo(() => {
     if (gameType === "morpion") return [...Array(3)].map(x => [...Array(3)].fill(""))
-    else if (gameType === "connect4") return [...Array(6)].map(x => [...Array(7)].fill(""))
+    else if (gameType === "connect4") return [...Array(7)].map(x => [...Array(6)].fill(""))
 
     return [...Array(3)].map(x => [...Array(3)].fill(""))
   }, [gameType])
@@ -197,8 +197,8 @@ export default function Board({
       win={win}
       backToMenu={backToMenu}
       oppStillOn={oppStillOn}
-      rematch={rematch}
-    />
+      whoRematch={whoRematch}
+      rematch={rematch}/>
   )
   else return <div>Chargement</div>
 }
