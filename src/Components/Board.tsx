@@ -71,8 +71,6 @@ export default function Board({
   }, [count, win, whoStart])
 
   function onPlay(col: number, row: number) {
-    console.log(col, row);
-
     if (ws === undefined) return
     if (!inviteJoin) return
 
