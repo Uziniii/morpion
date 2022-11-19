@@ -7,7 +7,7 @@ import wsEventHook, { sendEventFunc } from './Hooks/wsEventHook';
 let game: Games;
 let userType: UserType;
 
-const url = (window as any).PROD as boolean ? window.location.host : "localhost:3000"
+const url = ((window as any).PROD as boolean | undefined) === undefined ? window.location.host : "localhost:5000"
 // const url = window.location.host
 
 let ws = new WebSocket(`ws://${url}/`, "echo-protocol")

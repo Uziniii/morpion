@@ -11,13 +11,13 @@ export default defineConfig(({ command }) => {
       PROD
     },
     build: {
-      outDir: "./server/dist"
+      outDir: "./server/out/server/dist"
     },
     server: {
       proxy: {
-        "/room": "http://localhost:3000/",
+        "/room": "http://localhost:5000/",
         "/ws": {
-          target: "ws://localhost:3000/",
+          target: "ws://localhost:5000/",
           ws: true
         }
       }

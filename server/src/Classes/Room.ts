@@ -48,11 +48,15 @@ class Room {
         }, 120_000)
     }
 
+    public get getBoardSize() {
+        return this.board.length * this.board[0].length
+    }
+
     public incrementCounter (): number {
         return this.count++;
     }
 
-    public setCell (col: number, row: number, who: "x" | "o"): void {
+    public setCell (col: number, row: number, who: string): void {
         this.board[col][row] = who;
     }
 

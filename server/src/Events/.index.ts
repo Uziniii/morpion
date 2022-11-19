@@ -1,3 +1,4 @@
+import CONNECT4_PLAY from "./Connect4Play";
 import CREATE_ROOM from "./CreateRoom";
 import JOIN_ROOM from "./JoinRoom";
 import LEAVE_ROOM from "./LeaveRoom";
@@ -9,5 +10,6 @@ export {
     JOIN_ROOM,
     LEAVE_ROOM,
     MORPION_PLAY,
+    CONNECT4_PLAY,
     REMATCH,
 }

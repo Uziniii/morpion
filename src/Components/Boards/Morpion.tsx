@@ -1,7 +1,7 @@
 import AfterWinMenu from "../AfterWinMenu";
 
 interface Props {
-  board: string[][];
+  board: string[][] | string;
   inviteCode: string;
   showCode: boolean;
   onPlay: (col: number, row: number) => void;
@@ -25,12 +25,14 @@ export default function Morpion({
   whoRematch,
   rematch 
 }: Props) {
-  return (
-    <div id="morpion" className="morpion">
-      {showCode && <h1>Code d'invitation : {inviteCode}</h1>}
-      {!showCode && <h1>{topSentence}</h1>}
+  return <div id="morpion" className="morpion">
+    {showCode && <h1>Code d'invitation : {inviteCode}</h1>}
+    {!showCode && <h1>{topSentence}</h1>}
 
-      <div className="board">
+    {
+      typeof board === "string" 
+        ? board 
+        : <div className="board">
         {board.map((x, i) => {
           return <div className="cell" key={i}>
             {x.map((y, j) => {
@@ -49,14 +51,14 @@ export default function Morpion({
           </div>
         })}
       </div>
+    }
 
-      <AfterWinMenu 
-        win={win}
-        oppStillOn={oppStillOn}
-        whoRematch={whoRematch}
-        backToMenu={backToMenu}
-        rematch={rematch}
-      />
-    </div>
-  )
+    <AfterWinMenu 
+      win={win}
+      oppStillOn={oppStillOn}
+      whoRematch={whoRematch}
+      backToMenu={backToMenu}
+      rematch={rematch}
+    />
+  </div>
 }

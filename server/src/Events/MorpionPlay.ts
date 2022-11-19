@@ -81,7 +81,7 @@ const MORPION_PLAY = new ServerEvent<UserData, Storage, EventsClientData[Events.
 
     game.incrementCounter()
 
-    if (win || game.count === 9) {
+    if (win || game.count === game.getBoardSize) {
       creator.send<Events.MORPION_FINISH>(Events.MORPION_FINISH, {
         win: win ? !inviteWin : undefined,
         board: game.board
@@ -91,14 +91,16 @@ const MORPION_PLAY = new ServerEvent<UserData, Storage, EventsClientData[Events.
         win: win ? inviteWin : undefined,
         board: game.board
       })
-    } else {
-      let toSend = {
-        board: game.board
-      }
 
-      creator.send<Events.MORPION_PLAY>(Events.MORPION_PLAY, toSend)
-      invite.send<Events.MORPION_PLAY>(Events.MORPION_PLAY, toSend)
+      return
     }
+
+    let toSend = {
+      board: game.board
+    }
+
+    creator.send<Events.MORPION_PLAY>(Events.MORPION_PLAY, toSend)
+    invite.send<Events.MORPION_PLAY>(Events.MORPION_PLAY, toSend)
   },
 })
 

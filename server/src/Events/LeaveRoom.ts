@@ -18,7 +18,7 @@ const LEAVE_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.LE
 
         const game = roomMap.get(user.data.room)
 
-        if (game === undefined || game?.invite === null) return;
+        if (game === undefined || game.invite === null) return;
 
         const invite = server.getUser(game.invite)
         const creator = server.getUser(game.creator)

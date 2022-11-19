@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { EventsServerData, Events, EventsClientData, Games, UserType } from "../../server/src/Interface/Events"
 import { sendEventFunc } from "../Hooks/wsEventHook";
-import FourPow from "./Boards/FourPow";
+import Connect4 from "./Boards/Connect4";
 import Morpion from "./Boards/Morpion";
 
 export interface BoardProps {
@@ -14,6 +14,8 @@ export interface BoardProps {
   setInRoom: (value: boolean) => void;
 }
 
+let joinEventSend = false;
+
 export default function Board({
   game,
   invitePropsCode,
@@ -23,15 +25,7 @@ export default function Board({
   setInRoom
 }: BoardProps) {
   const [gameType, setGameType] = useState(game)
-
-  let baseBoard = useMemo(() => {
-    if (gameType === "morpion") return [...Array(3)].map(x => [...Array(3)].fill(""))
-    else if (gameType === "connect4") return [...Array(7)].map(x => [...Array(6)].fill(""))
-
-    return [...Array(3)].map(x => [...Array(3)].fill(""))
-  }, [gameType])
-
-  const [board, setBoard] = useState<string[][]>(baseBoard)
+  const [board, setBoard] = useState<string[][] | string>("Chargement")
   const [inviteCode, setInviteCode] = useState(invitePropsCode)
   const [inviteJoin, setInviteJoin] = useState(false)
   const [whoStart, setWhoStart] = useState<number>()
@@ -40,6 +34,15 @@ export default function Board({
   const [win, setWin] = useState<boolean | undefined | null>(null)
   const [oppStillOn, setOppStillOn] = useState(true)
   const [whoRematch, setWhoRematch] = useState<boolean | undefined>(undefined)
+  const [reset, setReset] = useState(0)
+
+  useMemo(() => {
+    let baseBoard: string[][] | string = "Chargement"
+    if (gameType === "morpion") baseBoard = [...Array(3)].map(x => [...Array(3)].fill(""))
+    else if (gameType === "connect4") baseBoard = [...Array(7)].map(x => [...Array(6)].fill(""))
+
+    setBoard(baseBoard)
+  }, [gameType, reset])
 
   let [topSentence, wichTurn] = useMemo(() => {
     if (win !== null) {
@@ -92,9 +95,13 @@ export default function Board({
   }
 
   useEffect(() => {
-    if (invitePropsCode !== "") sendEvent<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
-      inviteCode
-    })
+    if (invitePropsCode !== "" && !joinEventSend) {
+      joinEventSend = true
+
+      sendEvent<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
+        inviteCode
+      })
+    }
 
     ws.onmessage = (msg) => {
       try {
@@ -116,10 +123,10 @@ export default function Board({
             data = data as EventsServerData[typeof event]
 
             if (data.rematch) {
-              setBoard(baseBoard)
               setWhoRematch(undefined)
               setCounter(0)
               setWin(null)
+              setReset(v => v + 1)
             }
 
             setInviteJoin(true)
@@ -188,7 +195,7 @@ export default function Board({
     />
   )
   else if (gameType === "connect4") return (
-    <FourPow
+    <Connect4
       onPlay={onPlay}
       inviteCode={inviteCode}
       topSentence={topSentence}

@@ -74,9 +74,16 @@
     border-top: none;
     border-bottom: none;
   }
+
+  #connect4 .board .case {
+    @apply m-2 w-16 aspect-square border-4 border-blue-600 shadow-sm shadow-blue-800 rounded-full bg-[var(--bg-color)]
+  }
+
 }
 
 :root {
+  --bg-color: #242424;
+
   font-family: "Josefin Sans", Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
@@ -84,7 +91,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 1);
-  background-color: #242424;
+  background-color: var(--bg-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
