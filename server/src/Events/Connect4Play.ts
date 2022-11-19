@@ -88,10 +88,7 @@ const CONNECT4_PLAY = new ServerEvent<UserData, Storage, EventsClientData[Events
                     for (let j = 0; j < x.length; j++) {
                         let row = x[j]
                         if (row === clc && i <= 2 && j <= 3) {
-                            for (let k = 0; k < 4; k++) {
-                                console.log(grid[i + k], i + k, i);
-                                diagonal.push(grid[i + k][j + k] === clc)
-                            }
+                            for (let k = 0; k < 4; k++) diagonal.push(grid[i + k][j + k] === clc)
                         }
 
                         if (diagonal.length === 4) {
@@ -132,7 +129,7 @@ const CONNECT4_PLAY = new ServerEvent<UserData, Storage, EventsClientData[Events
                 win: win ? inviteWin : undefined,
                 board: game.board
             })
-            
+
             return
         }
 

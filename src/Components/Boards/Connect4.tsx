@@ -36,9 +36,6 @@ export default function Connect4({
         {board.map((x, i) => {
           return <div key={i}>
             {x.map((color, j) => {
-              console.log(color);
-              
-
               if (color !== "") return <div key={j} className={`case ${color === "r" ? "!bg-red-600" : "!bg-yellow-300"}`}></div>
 
               return <div key={j} onClick={() => onPlay(i, j)} className="cursor-pointer case"></div>
