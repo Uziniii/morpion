@@ -40,11 +40,16 @@ const REMATCH = new ServerEvent<UserData, Storage, EventsClientData[Events.REMAT
             return
         }
 
-        const newGame = new Room(roomMap, server, game.type, user.getToken, game.getId)
+        if (game.rematch === user.getToken) return;
+
+        const newGame = new Room(roomMap, server, game.type, creator.getToken, game.getId)
 
         newGame.setInvite = invite.getToken
 
         roomMap.set(newGame.getId, newGame)
+
+        console.log(newGame);
+        
 
         invite.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, {
             rematch: true,

@@ -30,7 +30,9 @@ const JOIN_ROOM = new ServerEvent<UserData, Storage, EventsClientData[Events.JOI
       game: game.type
     }
 
-    user.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, toSend)
+    if (game.invite === null) return;
+
+    server.getUser(game.invite)?.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, toSend)
     server.getUser(game.creator)?.send<Events.JOIN_ROOM>(Events.JOIN_ROOM, toSend)
   }
 })
